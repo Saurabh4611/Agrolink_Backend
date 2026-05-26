@@ -29,14 +29,14 @@ public class AuthService {
 		User user = User.builder()
 		.fullName(request.getFullName())
 		.email(request.getEmail())
-		.password(request.getPassword())
+		.password(passwordEncoder.encode(request.getPassword()))
 		.phone(request.getPhone())
 		.address(request.getAddress())
 		.role(request.getRole())
 		.build();
-		
+
 		userRepository.save(user);
-		
+
 		return "User Registered Sucessfully";
 	}
 	

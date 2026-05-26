@@ -3,6 +3,7 @@ package com.agrolink.project.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +35,8 @@ public class CropController {
 	
 	
 	
-	@PostMapping
+	@PreAuthorize("hasRole('FARMER')")
+	@PostMapping("/add")
 	public ResponseEntity<?> addcrop(
 			@RequestBody CropRequest request)
 	{
@@ -57,6 +59,7 @@ public class CropController {
 	}
 	
 	
+	@PreAuthorize("hasRole('FARMER')")
 	@DeleteMapping("/{cropId}")
     public ResponseEntity<?> deleteCrop(
             @PathVariable Long cropId) {
@@ -67,12 +70,14 @@ public class CropController {
                 "Crop Deleted Successfully");
     
 	}
+	@PreAuthorize("hasRole('FARMER')")
 	@GetMapping("/{id}")
 	public Crop getCropById(@PathVariable Long id)
 	{
 		return cropService.getCropById(id);
 	}
 	
+	@PreAuthorize("hasRole('FARMER')")
 	@PutMapping("/{id}")
 	public Crop updateCrop(@PathVariable Long id , @RequestBody Crop crop)
 	{

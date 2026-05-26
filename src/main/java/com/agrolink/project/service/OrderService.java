@@ -84,12 +84,29 @@ public class OrderService {
 		
 		return "Order Cancelled Successfully";
 	}
-	
+	//farmer sees order by this
+	public List<Order> getFarmerOrders(Long farmerId)
+		{
+			return orderRepository.findByCropFarmerId(farmerId);
+		}
+		
+	public String updateOrderStatus(Long orderId,OrderStatus status)
+	{
+		
+		Order order = orderRepository.findById(orderId).orElseThrow(()-> new RuntimeException("Order Not Found"));
+		
+		
+		order.setStatus(status);
+		orderRepository.save(order);
+		
+		return "Order Status Updated";
+		
+	}
 		
 		
 		
 		
-	
+	//buyers order seen by these
 	public List<Order> getBuyerOrder(Long buyerId)
 	{
 		return orderRepository.findByBuyerId(buyerId);

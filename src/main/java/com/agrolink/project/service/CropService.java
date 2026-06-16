@@ -1,5 +1,10 @@
 package com.agrolink.project.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,10 +26,24 @@ public class CropService {
     private final UserRepository userRepository;
 
    
-    public String addCrop(CropRequest request) {
+    public String addCrop(CropRequest request) throws IOException {
 
         User farmer = userRepository.findById(request.getFarmerId())
                 .orElseThrow(() -> new RuntimeException("Farmer Not Found"));
+
+        String fileName = request.getImage().getOriginalFilename();
+
+        Path uploadPath = Paths.get("uploads");
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Files.copy(
+                request.getImage().getInputStream(),
+                uploadPath.resolve(fileName),
+                StandardCopyOption.REPLACE_EXISTING
+        );
 
         Crop crop = new Crop();
 
@@ -33,8 +52,10 @@ public class CropService {
         crop.setPrice(request.getPrice());
         crop.setCategory(request.getCategory());
         crop.setLocation(request.getLocation());
-        crop.setImageUrl(request.getImageUrl());
         crop.setQuantity(request.getQuantity());
+
+        crop.setImageUrl(fileName);
+
         crop.setCreatedAt(LocalDateTime.now());
         crop.setFarmer(farmer);
 
@@ -81,7 +102,7 @@ public class CropService {
         old.setCropName(crop.getCropName());
         old.setCategory(crop.getCategory());
         old.setDescription(crop.getDescription());
-        old.setImageUrl(crop.getImageUrl());
+       
         old.setLocation(crop.getLocation());
         old.setPrice(crop.getPrice());
         old.setQuantity(crop.getQuantity());

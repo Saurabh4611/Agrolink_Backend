@@ -1,5 +1,7 @@
 package com.agrolink.project.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +18,7 @@ public class CropRequest {
 	private Integer quantity;
 	private String category;
 	private String location;
-	private String imageUrl;
+	private MultipartFile image;
 	private Long farmerId;
 	
 	

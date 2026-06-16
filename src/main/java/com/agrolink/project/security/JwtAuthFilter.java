@@ -17,15 +17,17 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
 	
+	private final CustomUserDetailsService customUserDetailsService;
 	
-	private final CustomUserDetailsService custommUserDetailsService;
 	@Override
 	protected void doFilterInternal(
 			HttpServletRequest request,
@@ -34,49 +36,49 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 			throws ServletException, IOException {
 
-		String authHeader = request.getHeader("Authorization");
+		try {
+			String authHeader = request.getHeader("Authorization");
 
-		String token = null;
-		String email = null ;
-		;
+			String token = null;
+			String email = null;
 
+			if(authHeader != null && authHeader.startsWith("Bearer ")) {
+				token = authHeader.substring(7);
+				
+				// Validate token FIRST before extracting claims
+				if(jwtUtil.validateToken(token)) {
+					email = jwtUtil.extractEmail(token);
 
+					if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+						try {
+							UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
-		if(authHeader != null &&  authHeader.startsWith("Bearer "))
-		{
-			token = authHeader.substring(7);
-			email=jwtUtil.extractEmail(token);
+							UsernamePasswordAuthenticationToken authToken =
+									new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
+							authToken.setDetails(
+									new WebAuthenticationDetailsSource()
+									.buildDetails(request)
+							);
 
-			if(email != null && SecurityContextHolder.getContext()
-					.getAuthentication()==null)
-			{
-				UserDetails userDetails = custommUserDetailsService.loadUserByUsername(email);
-
-				if(jwtUtil.validateToken(token))
-				{
-					UsernamePasswordAuthenticationToken authToken =
-							new UsernamePasswordAuthenticationToken(userDetails, null,userDetails.getAuthorities()
-									);
-
-					 authToken.setDetails(
-		                        new WebAuthenticationDetailsSource()
-		                                .buildDetails(request)
-		                );
-
-					 SecurityContextHolder
-                     .getContext()
-                     .setAuthentication(authToken);
-					 
+							SecurityContextHolder
+							.getContext()
+							.setAuthentication(authToken);
+							
+							log.debug("JWT Token validated successfully for user: {}", email);
+						} catch (Exception e) {
+							log.warn("Failed to load user details for email: {}", email, e);
+						}
+					}
+				} else {
+					log.warn("JWT Token validation failed");
 				}
 			}
+		} catch (Exception e) {
+			log.error("JWT filter error: {}", e.getMessage());
 		}
 
 		filterChain.doFilter(request, response);
 	}
-	
-	
-	
-	
 
 }

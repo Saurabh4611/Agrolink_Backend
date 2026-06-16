@@ -21,7 +21,7 @@ import com.agrolink.project.service.OrderService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/api/order")
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class OrderController {
@@ -36,8 +36,8 @@ public class OrderController {
 	{
 		return orderService.placeOrder(request);
 	}
+	
 	//Buyer History
-	@PreAuthorize("hasRole('BUYER')")
 	@GetMapping("/{buyerId}")
 	public List<Order>getBuyerOrders(
 			@PathVariable Long buyerId)
@@ -71,6 +71,7 @@ public class OrderController {
 	{
 		return orderService.updateOrderStatus(orderId, status);
 	}
+	
 	
 	
 	

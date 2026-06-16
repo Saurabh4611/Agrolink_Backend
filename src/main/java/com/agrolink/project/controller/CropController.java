@@ -1,12 +1,15 @@
 package com.agrolink.project.controller;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,11 +39,10 @@ public class CropController {
 	
 	
 	@PreAuthorize("hasRole('FARMER')")
-	@PostMapping("/add")
-	public ResponseEntity<?> addcrop(
-			@RequestBody CropRequest request)
+	@PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<?> addcrop(@ModelAttribute CropRequest request) throws IOException
 	{
-		return ResponseEntity.ok(cropService.addCrop(request));
+	    return ResponseEntity.ok(cropService.addCrop(request));
 	}
 	
 	@GetMapping

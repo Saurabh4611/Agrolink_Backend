@@ -19,14 +19,14 @@ import com.agrolink.project.service.CartService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/api/cart")
 @RequiredArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class CartController {
 	
 	private final CartService cartService;
 	
-	@PreAuthorize("hasRole('BUYER')")
+	
 	@PostMapping("/add")
 	public String addToCart(@RequestBody CartRequest request)
 	{
@@ -40,7 +40,7 @@ public class CartController {
 	}
 	
 	@PreAuthorize("hasRole('BUYER')")
-	@DeleteMapping("/{cartId}")
+	@DeleteMapping("/remove/{cartId}")
 	public String removeItem(@PathVariable Long cartId)
 	{
 		return cartService.removeCartItem(cartId);

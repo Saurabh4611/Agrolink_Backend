@@ -49,7 +49,7 @@ public class FileUploadController {
 	Files.write(path, file.getBytes());
 	
 	String imageUrl =
-			"http://localhost:8080/uploads/"+fileName;
+			"https://agrolink-backend-k4eo.onrender.com/uploads/"+fileName;
 	
 	return ResponseEntity.ok(imageUrl);
 	
